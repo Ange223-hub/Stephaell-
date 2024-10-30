@@ -1,331 +1,267 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { MapPin, Heart, MessageCircle, Shield, Star, Bot, Send, User } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import React, { useState } from 'react';
+import { User, Search, MessageCircle, Home, MapPin, Shield, Coffee, Heart, Users } from 'lucide-react';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
-// Composant Assistant IA
-const AIAssistant = ({ isOpen, onClose }) => {
-  const [messages, setMessages] = useState([
-    {
-      type: 'ai',
-      content: "Bonjour ! Je suis votre assistant personnel. Je peux vous aider à :\n- Trouver des profils compatibles\n- Améliorer votre profil\n- Donner des conseils de conversation\nQue puis-je faire pour vous ?"
-    }
-  ]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-
-  // Simuler les réponses de l'IA
-  const aiResponses = {
-    profile: [
-      "Voici quelques conseils pour améliorer votre profil :",
-      "- Ajoutez une photo récente et de qualité",
-      "- Décrivez vos passions de manière authentique",
-      "- Partagez vos centres d'intérêt",
-      "Voulez-vous que je vous aide à rédiger une bio attractive ?"
-    ],
-    match: [
-      "D'après vos centres d'intérêt, voici les profils qui pourraient vous correspondre :",
-      "- Sarah aime aussi la lecture et la cuisine",
-      "- Marc partage votre passion pour l'art",
-      "Souhaitez-vous que j'analyse plus en détail ces compatibilités ?"
-    ],
-    conversation: [
-      "Pour démarrer une conversation, je suggère :",
-      "- Mentionnez un intérêt commun",
-      "- Posez une question ouverte",
-      "- Restez naturel et authentique",
-      "Voulez-vous des exemples de messages d'ouverture ?"
-    ]
-  };
-
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
-
-    // Ajouter le message de l'utilisateur
-    const userMessage = { type: 'user', content: inputMessage };
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsTyping(true);
-
-    // Simuler le traitement de l'IA
-    setTimeout(() => {
-      let response = "Je ne suis pas sûr de comprendre. Pouvez-vous reformuler ?";
-      
-      // Analyse simple du message pour déterminer la réponse
-      const lowercaseInput = inputMessage.toLowerCase();
-      if (lowercaseInput.includes('profil')) {
-        response = aiResponses.profile.join('\n');
-      } else if (lowercaseInput.includes('match') || lowercaseInput.includes('compatib')) {
-        response = aiResponses.match.join('\n');
-      } else if (lowercaseInput.includes('message') || lowercaseInput.includes('conversation')) {
-        response = aiResponses.conversation.join('\n');
-      }
-
-      setMessages(prev => [...prev, { type: 'ai', content: response }]);
-      setIsTyping(false);
-    }, 1000);
-  };
-
-  return (
-    <Card className={`fixed bottom-4 right-4 w-96 h-[500px] shadow-xl ${isOpen ? 'flex' : 'hidden'} flex-col`}>
-      <CardHeader className="bg-purple-600 text-white p-4 rounded-t-lg">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Bot size={24} />
-            <h3 className="font-bold">Assistant IA</h3>
-          </div>
-          <Button variant="ghost" className="text-white hover:text-purple-200" onClick={onClose}>
-            ✕
-          </Button>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[80%] p-3 rounded-lg ${
-                message.type === 'user'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-100 text-gray-800'
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                {message.type === 'ai' ? <Bot size={16} /> : <User size={16} />}
-                <span className="font-semibold">
-                  {message.type === 'ai' ? 'Assistant' : 'Vous'}
-                </span>
-              </div>
-              <p className="whitespace-pre-line">{message.content}</p>
-            </div>
-          </div>
-        ))}
-        {isTyping && (
-          <div className="flex items-center gap-2 text-gray-500">
-            <Bot size={16} />
-            <span>L'assistant écrit...</span>
-          </div>
-        )}
-      </CardContent>
-
-      <CardFooter className="p-4 border-t">
-        <div className="flex w-full gap-2">
-          <Input
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Posez votre question..."
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-          />
-          <Button onClick={handleSendMessage}>
-            <Send size={16} />
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
-  );
-};
-
-// Composant Principal
-const App = () => {
-  const [selectedCity, setSelectedCity] = useState('ouaga');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isAIOpen, setIsAIOpen] = useState(false);
-
-  const cities = [
-    { id: 'ouaga', name: 'Ouagadougou' },
-    { id: 'bobo', name: 'Bobo-Dioulasso' },
-    { id: 'koudougou', name: 'Koudougou' },
-    { id: 'banfora', name: 'Banfora' }
-  ];
+const BurkinaConnect = () => {
+  const [activeTab, setActiveTab] = useState('home');
+  const [activeCategory, setActiveCategory] = useState('amitié');
 
   const profiles = [
     {
-      id: 1,
-      name: 'Sarah K.',
-      age: 24,
-      city: 'Ouagadougou',
-      interests: ['Sport', 'Lecture', 'Cuisine'],
-      verified: true,
-      compatibilityScore: 85
+      name: "Aminata",
+      age: 25,
+      ville: "Ouagadougou",
+      intérêts: ["Culture", "Sport", "Lecture"],
+      recherche: "Amitié",
+      verified: true
     },
     {
-      id: 2,
-      name: 'Marc O.',
+      name: "Ibrahim",
       age: 28,
-      city: 'Bobo-Dioulasso',
-      interests: ['Musique', 'Voyage', 'Art'],
-      verified: true,
-      compatibilityScore: 78
+      ville: "Bobo-Dioulasso",
+      intérêts: ["Musique", "Voyages", "Cuisine"],
+      recherche: "Relation sérieuse",
+      verified: true
+    },
+    {
+      name: "Fatima",
+      age: 23,
+      ville: "Koudougou",
+      intérêts: ["Art", "Cinéma", "Bénévolat"],
+      recherche: "Sorties",
+      verified: true
     }
   ];
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-4 mb-4">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-purple-600">
-            Rencontres Amicales Burkina
-          </h1>
-          <Button
-            onClick={() => setIsAIOpen(true)}
-            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
-          >
-            <Bot size={16} />
-            Assistant IA
-          </Button>
-        </div>
-        
-        <div className="flex items-center gap-2 mb-4">
-          <MapPin className="text-gray-500" />
-          <Select value={selectedCity} onValueChange={setSelectedCity}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Sélectionnez une ville" />
-            </SelectTrigger>
-            <SelectContent>
-              {cities.map(city => (
-                <SelectItem key={city.id} value={city.id}>
-                  {city.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+  const renderContent = () => {
+    switch(activeTab) {
+      case 'home':
+        return (
+          <div className="space-y-4 p-4">
+            <div className="bg-green-100 p-4 rounded-lg mb-6">
+              <h2 className="text-xl font-bold mb-2">Burkina Connect</h2>
+              <p className="text-gray-600">Rencontrez de nouvelles personnes en toute sécurité</p>
+            </div>
+            
+            <div className="flex gap-4 overflow-x-auto pb-2">
+              <button 
+                className={`px-4 py-2 rounded-full whitespace-nowrap ${
+                  activeCategory === 'amitié' ? 'bg-green-500 text-white' : 'bg-green-100'
+                }`}
+                onClick={() => setActiveCategory('amitié')}
+              >
+                <div className="flex items-center gap-2">
+                  <Users size={16} />
+                  <span>Amitié</span>
+                </div>
+              </button>
+              <button 
+                className={`px-4 py-2 rounded-full whitespace-nowrap ${
+                  activeCategory === 'sorties' ? 'bg-green-500 text-white' : 'bg-green-100'
+                }`}
+                onClick={() => setActiveCategory('sorties')}
+              >
+                <div className="flex items-center gap-2">
+                  <Coffee size={16} />
+                  <span>Sorties</span>
+                </div>
+              </button>
+              <button 
+                className={`px-4 py-2 rounded-full whitespace-nowrap ${
+                  activeCategory === 'sérieux' ? 'bg-green-500 text-white' : 'bg-green-100'
+                }`}
+                onClick={() => setActiveCategory('sérieux')}
+              >
+                <div className="flex items-center gap-2">
+                  <Heart size={16} />
+                  <span>Relation sérieuse</span>
+                </div>
+              </button>
+            </div>
 
-        <div className="relative mb-4">
-          <Input
-            type="search"
-            placeholder="Rechercher des profils..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full"
-          />
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto">
-        <Tabs defaultValue="explore" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 gap-4">
-            <TabsTrigger value="explore">Explorer</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="likes">J'aime</TabsTrigger>
-            <TabsTrigger value="profile">Profil</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="explore">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {profiles.map(profile => (
-                <Card key={profile.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-bold">{profile.name}, {profile.age}</h3>
-                        <p className="text-sm text-gray-500 flex items-center">
-                          <MapPin className="mr-1" size={16} />
-                          {profile.city}
-                        </p>
+            <div className="space-y-4">
+              {profiles.map((profile, index) => (
+                <Card key={index} className="w-full">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                        <User size={32} className="text-gray-500" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        {profile.verified && (
-                          <Shield className="text-blue-500" size={20} />
-                        )}
-                        <span className="text-sm font-medium text-green-600">
-                          {profile.compatibilityScore}% compatible
-                        </span>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{profile.name}, {profile.age}</h3>
+                              {profile.verified && (
+                                <Shield size={16} className="text-green-500" />
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 flex items-center gap-1">
+                              <MapPin size={14} />
+                              {profile.ville}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-600">Recherche: {profile.recherche}</p>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {profile.intérêts.map((intérêt, i) => (
+                              <span key={i} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                {intérêt}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {profile.interests.map(interest => (
-                        <span key={interest} className="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-sm">
-                          {interest}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex justify-between gap-2">
-                      <Button variant="outline" className="flex items-center gap-2">
-                        <MessageCircle size={16} />
-                        Message
-                      </Button>
-                      <Button className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
-                        <Heart size={16} />
-                        J'aime
-                      </Button>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-          </TabsContent>
+          </div>
+        );
+      
+      case 'search':
+        return (
+          <div className="p-4">
+            <div className="relative mb-4">
+              <input
+                type="text"
+                placeholder="Rechercher des personnes..."
+                className="w-full p-3 border rounded-lg pl-10"
+              />
+              <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+            </div>
+            <div className="space-y-4">
+              <h3 className="font-semibold">Filtres</h3>
+              <div className="grid grid-cols-2 gap-2">
+                <button className="p-2 border rounded">Ville</button>
+                <button className="p-2 border rounded">Âge</button>
+                <button className="p-2 border rounded">Intérêts</button>
+                <button className="p-2 border rounded">Type de rencontre</button>
+              </div>
+            </div>
+          </div>
+        );
 
-          <TabsContent value="messages">
-            <Card>
+      case 'subscription':
+        return (
+          <div className="p-4">
+            <h2 className="text-xl font-bold mb-4">Abonnement Premium</h2>
+            <Card className="mb-4">
               <CardContent className="p-4">
-                <h2 className="text-xl font-bold mb-4">Messages</h2>
-                <p className="text-gray-500">
-                  Fonctionnalité premium - Abonnez-vous pour accéder aux messages illimités
-                </p>
-                <Button className="mt-4 bg-purple-600 hover:bg-purple-700">
-                  Voir les offres premium
-                </Button>
+                <h3 className="font-semibold mb-2">Avantages Premium</h3>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <Shield size={16} className="text-green-500" />
+                    <span>Profil vérifié</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <MessageCircle size={16} className="text-green-500" />
+                    <span>Messages illimités</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Users size={16} className="text-green-500" />
+                    <span>Voir qui vous a liké</span>
+                  </li>
+                </ul>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="likes">
-            <Card>
+            <Card className="mb-4">
               <CardContent className="p-4">
-                <h2 className="text-xl font-bold mb-4">Qui vous a liké ?</h2>
-                <p className="text-gray-500">
-                  Fonctionnalité premium - Découvrez qui s'intéresse à votre profil
-                </p>
-                <Button className="mt-4 bg-purple-600 hover:bg-purple-700">
-                  Débloquer cette fonction
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="profile">
-            <Card>
-              <CardContent className="p-4">
-                <h2 className="text-xl font-bold mb-4">Mon Profil</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Statut de vérification</label>
-                    <div className="flex items-center gap-2 text-blue-500">
-                      <Shield size={20} />
-                      <span>Profil vérifié</span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Abonnement</label>
-                    <div className="flex items-center gap-2">
-                      <Star size={20} className="text-yellow-500" />
-                      <span>Premium</span>
-                    </div>
-                  </div>
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                    Modifier mon profil
-                  </Button>
+                <h3 className="font-semibold mb-2">Paiement par Orange Money</h3>
+                <p className="text-sm text-gray-600 mb-4">Numéro: +226 66798031</p>
+                <div className="space-y-2">
+                  <button className="w-full p-3 bg-orange-500 text-white rounded-lg">
+                    1 mois - 2000 FCFA
+                  </button>
+                  <button className="w-full p-3 bg-orange-500 text-white rounded-lg">
+                    3 mois - 5000 FCFA
+                  </button>
+                  <button className="w-full p-3 bg-orange-500 text-white rounded-lg">
+                    6 mois - 9000 FCFA
+                  </button>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+          </div>
+        );
 
-      <AIAssistant isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} />
+      case 'profile':
+        return (
+          <div className="p-4">
+            <div className="text-center mb-6">
+              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <User size={40} className="text-gray-500" />
+              </div>
+              <h2 className="text-xl font-bold">Mon Profil</h2>
+            </div>
+            <div className="space-y-4">
+              <button className="w-full p-3 border rounded-lg text-left">
+                Modifier mon profil
+              </button>
+              <button className="w-full p-3 border rounded-lg text-left">
+                Paramètres de confidentialité
+              </button>
+              <button className="w-full p-3 border rounded-lg text-left">
+                Vérification du profil
+              </button>
+              <button className="w-full p-3 border rounded-lg text-left text-red-500">
+                Déconnexion
+              </button>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md mx-auto h-[600px] bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+      <div className="bg-green-500 text-white p-4">
+        <h1 className="text-xl font-bold">Burkina Connect</h1>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto">
+        {renderContent()}
+      </div>
+      
+      <div className="border-t bg-white">
+        <div className="flex justify-around p-3">
+          <button
+            onClick={() => setActiveTab('home')}
+            className={`flex flex-col items-center ${activeTab === 'home' ? 'text-green-500' : 'text-gray-500'}`}
+          >
+            <Home size={24} />
+            <span className="text-xs mt-1">Accueil</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('search')}
+            className={`flex flex-col items-center ${activeTab === 'search' ? 'text-green-500' : 'text-gray-500'}`}
+          >
+            <Search size={24} />
+            <span className="text-xs mt-1">Recherche</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('subscription')}
+            className={`flex flex-col items-center ${activeTab === 'subscription' ? 'text-green-500' : 'text-gray-500'}`}
+          >
+            <Shield size={24} />
+            <span className="text-xs mt-1">Premium</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`flex flex-col items-center ${activeTab === 'profile' ? 'text-green-500' : 'text-gray-500'}`}
+          >
+            <User size={24} />
+            <span className="text-xs mt-1">Profil</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
 
-<a href="https://their-site.netlify.app/sub-
-folder">Visitez ce site</a>
-export default App;
+export default BurkinaConnect;
